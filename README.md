@@ -26,7 +26,7 @@ Define a `div` element with id attribute
 
 Use GenaraToc with typescript
 ```typescript
-import toc from 'GenaraToc'
+import toc from 'genaratoc'
 // Typescript
 // Optional: Select h2 ~ h5 heading level, it is also a defualt setting if you leave it undefined
 const heading: string[] = ['h2', 'h3', 'h4', 'h5']
@@ -40,7 +40,7 @@ toc.generate({ heading, selector })
 Use GenaraToc with javascript
 ```javascript
 // JavaScript
-import toc from 'GenaraToc'
+import toc from 'genaratoc'
 const heading = ['h2', 'h3', 'h4', 'h5']
 const selector = '#toc'
 toc.generate({ heading, selector })
@@ -49,5 +49,5 @@ toc.generate({ heading, selector })
 ## Include CSS
 
 ```css
-@import 'GenaraToc/src/style/main.css';
+@import 'genaratoc/src/style/main.css';
 ```

@@ -1,6 +1,6 @@
 {
   "name": "genaratoc",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Automatically generate table of content from heading of HTML document",
   "main": "dist/index.js",
   "scripts": {
