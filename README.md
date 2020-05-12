@@ -1,20 +1,20 @@
-# GenaraToc
+# GeneraToc
 
-GenaraToc generates a table of contents (TOC) from headings in an HTML document. This is useful for documentation websites or SSR pages because it makes them easier to navigate. 
+GeneraToc generates a table of contents (TOC) from headings in an HTML document. This is useful for documentation websites or SSR pages because it makes them easier to navigate. 
 
-This library was inspired by [Tocify](https://github.com/gfranko/jquery.tocify.js), but GenaraToc uses native DOM methods and no other dependencies.
+This library was inspired by [Tocify](https://github.com/gfranko/jquery.tocify.js), but GeneraToc uses native DOM methods and no other dependencies.
 
 ## Installation
 
 Install it with npm.
 ```
-npm install --save genaratoc
+npm install --save generatoc
 ```
 
 OR Install it with yarn.
 
 ```bash
-yarn add genaratoc
+yarn add generatoc
 ```
 
 ## Usage
@@ -24,9 +24,9 @@ Define a `div` element with id attribute
 <div id="toc"></div>
 ```
 
-Use GenaraToc with typescript
+Use GeneraToc with typescript
 ```typescript
-import toc from 'genaratoc'
+import toc from 'generatoc'
 // Typescript
 // Optional: Select h2 ~ h5 heading level, it is also a defualt setting if you leave it undefined
 const heading: string[] = ['h2', 'h3', 'h4', 'h5']
@@ -37,10 +37,10 @@ const selector: string = '#toc'
 toc.generate({ heading, selector })
 ```
 
-Use GenaraToc with javascript
+Use GeneraToc with javascript
 ```javascript
 // JavaScript
-import toc from 'genaratoc'
+import toc from 'generatoc'
 const heading = ['h2', 'h3', 'h4', 'h5']
 const selector = '#toc'
 toc.generate({ heading, selector })

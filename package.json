@@ -1,6 +1,6 @@
 {
-  "name": "genaratoc",
-  "version": "1.0.3",
+  "name": "generatoc",
+  "version": "1.0.1",
   "description": "Automatically generate table of content from heading of HTML document",
   "main": "dist/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gadzan/genaratoc.git"
+    "url": "git+https://github.com/gadzan/generatoc.git"
   },
   "types": "src/index.d.ts",
   "keywords": [
@@ -22,14 +22,15 @@
     "contents",
     "generate",
     "html",
-    "structure"
+    "structure",
+    "SSR"
   ],
   "author": "Gadzan",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/gadzan/genaratoc/issues"
+    "url": "https://github.com/gadzan/generatoc/issues"
   },
-  "homepage": "https://github.com/gadzan/genaratoc/gentoc#readme",
+  "homepage": "https://github.com/gadzan/generatoc/gentoc#readme",
   "devDependencies": {
     "typescript": "^3.8.3"
   }
