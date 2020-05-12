@@ -49,5 +49,5 @@ toc.generate({ heading, selector })
 ## Include CSS
 
 ```css
-@import 'genaratoc/src/style/main.css';
+@import 'generatoc/src/style/main.css';
 ```
