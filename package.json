@@ -1,0 +1,36 @@
+{
+  "name": "genaratoc",
+  "version": "1.0.1",
+  "description": "Automatically generate table of content from heading of HTML document",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "release": "tsc && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gadzan/genaratoc.git"
+  },
+  "types": "src/index.d.ts",
+  "keywords": [
+    "toc",
+    "javascript",
+    "typescript",
+    "table",
+    "of",
+    "contents",
+    "generate",
+    "html",
+    "structure"
+  ],
+  "author": "Gadzan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gadzan/genaratoc/issues"
+  },
+  "homepage": "https://github.com/gadzan/genaratoc/gentoc#readme",
+  "devDependencies": {
+    "typescript": "^3.8.3"
+  }
+}

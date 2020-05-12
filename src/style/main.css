@@ -1,0 +1,36 @@
+/* TOC */
+#toc {
+  position: fixed;
+  left: 50%;
+  top: 20%;
+  margin-left: 400px;
+  border-left: 1px solid #dddddd;
+}
+
+#toc a {
+  display: block;
+  color: #cccccc;
+}
+
+#toc a:hover {
+  padding: 0;
+  color: var(--main-color);
+}
+
+#toc .active a {
+  color: var(--main-color);
+}
+
+#toc ul {
+  margin-left: 1em;
+}
+
+#toc li {
+  display: block;
+}
+
+@media only screen and (max-width: 540px) {
+  #toc {
+      display: none;
+  }
+}
