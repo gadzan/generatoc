@@ -8,13 +8,13 @@ This library was inspired by [Tocify](https://github.com/gfranko/jquery.tocify.j
 
 Install it with npm.
 ```
-npm install --save GenaraToc
+npm install --save genaratoc
 ```
 
 OR Install it with yarn.
 
 ```bash
-yarn add GenaraToc
+yarn add genaratoc
 ```
 
 ## Usage
