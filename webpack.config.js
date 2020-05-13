@@ -1,9 +1,10 @@
 const path = require('path')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CheckerPlugin } = require('awesome-typescript-loader')
 
 module.exports = {
   mode: 'production',
-  devtool: 'source-map',
+  // devtool: 'source-map',
   entry: {
     main: [
       './src/index.ts',
@@ -11,16 +12,22 @@ module.exports = {
     ]
   },
   output: {
+    libraryTarget: 'umd',
+    globalObject: 'this',
     path: path.resolve(__dirname, './build'),
-    filename: 'generatoc.min.js'
+    filename: 'generatoc.min.js',
+    umdNamedDefine: true
   },
 
   module: {
     rules: [
       {
-        test: /\.ts$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
+        test: /\.ts?$/,
+        loader: 'awesome-typescript-loader',
+        exclude: /node_modules/,
+        query: {
+          declaration: false,
+        }
       },
       {
         test: /\.css$/,
@@ -48,6 +55,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: 'generatoc.min.css'
     }),
+    new CheckerPlugin()
   ],
 
   resolve: {

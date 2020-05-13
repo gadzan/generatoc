@@ -1,1 +1,1 @@
-
+export as namespace toc
