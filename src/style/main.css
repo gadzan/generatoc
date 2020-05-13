@@ -1,4 +1,8 @@
 /* TOC */
+body {
+  --toc-color: #1b81b8
+}
+
 #toc {
   position: fixed;
   left: 50%;
@@ -14,11 +18,11 @@
 
 #toc a:hover {
   padding: 0;
-  color: var(--main-color);
+  color: var(--toc-color);
 }
 
 #toc .active a {
-  color: var(--main-color);
+  color: var(--toc-color);
 }
 
 #toc ul {

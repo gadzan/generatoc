@@ -1,26 +1,28 @@
+
 interface List {
+  level: number | null;
   ele: Element | null;
   children: List[];
 }
 
 interface Params {
+  content: string;
   heading?: string[];
   selector?: string;
 }
 
-declare global {
-  interface Array<T> {
-    last(): any;
-  }
-}
-
-// eslint-disable-next-line no-extend-native
-Array.prototype.last = function (this: any[]) {
-  return this[this.length - 1]
+interface Generatoc {
+  init?: Function
 }
 
 let tocSelector: string = '#toc'
 const headingList: List[] = []
+
+const generatoc: Generatoc = {}
+
+function last (arr: any[]) {
+  return arr[arr.length - 1]
+}
 
 function praseH (h: string): number {
   return +h.substr(1)
@@ -30,11 +32,11 @@ function lastBranches (k: List[]): List[] {
   if (k.length === 0) {
     return k
   }
-  let lastNode: List = k.last()
+  let lastNode: List = last(k)
   let lastArray = k
   while (lastNode.children.length !== 0) {
     lastArray = lastNode.children
-    lastNode = lastNode.children.last()
+    lastNode = last(lastNode.children)
   }
   return lastArray
 }
@@ -42,33 +44,40 @@ function lastBranches (k: List[]): List[] {
 function lastLeaf (k: List[]): List[] {
   let lastLeafNode: List[] = k
   while (lastLeafNode.length !== 0) {
-    lastLeafNode = lastLeafNode.last().children
+    lastLeafNode = last(lastLeafNode).children
   }
   return lastLeafNode
 }
 
-function nestNode (times: number, node: Element): List {
+function nestNode (times: number, node: Element, level: number): List {
   const template: List = {
+    level: null,
     ele: null,
     children: []
   }
   if (times <= 0) {
+    template.level = level
     template.ele = node
   } else {
-    template.children = [nestNode(--times, node)]
+    template.level = level - times
+    template.children = [nestNode(--times, node, level)]
   }
   return template
 }
 
 function getLastHeadingParentOf (level: number, headings: List[]): List {
-  let tmp = headings.last()
+  let tmp = last(headings)
   let parent = {
+    level: null,
     ele: null,
     children: headings
   }
-  while (!tmp.ele || praseH(tmp.ele.localName) !== level) {
+  while (!tmp.ele || tmp.level !== level) {
     parent = tmp
-    tmp = tmp.children.last()
+    tmp = last(tmp.children)
+    if(typeof tmp === 'undefined') {
+      break;
+    }
   }
   return parent
 }
@@ -114,14 +123,29 @@ function traceParentAndShow (ele: HTMLElement) {
   }
 }
 
+function getRealUl(element: HTMLElement | Element): HTMLCollection | undefined {
+  if(!element || !element.children[0]) {
+    return undefined
+  }
+  if(element.children[0].tagName.toLowerCase() === 'ul') {
+    Array.prototype.forEach.call(element.children, (ul: HTMLElement) => {
+      ul.style.display = 'block'
+    })
+    return getRealUl(element.children[0])
+  }
+  return element.children
+}
+
 function setShowEvent (element: HTMLElement) {
   element.addEventListener('click', function (e: Event) {
     e.stopPropagation()
     hideAllTocSubHeading(document.querySelector(tocSelector)!)
-    const uls = element.children
-    Array.prototype.forEach.call(uls, (ul: HTMLElement) => {
-      ul.style.display = 'block'
-    })
+    const uls = getRealUl(element.children[1])
+    if(uls) {
+      Array.prototype.forEach.call(uls, (ul: HTMLElement) => {
+        ul.style.display = 'block'
+      })
+    }
     traceParentAndShow(element)
   })
 }
@@ -146,6 +170,7 @@ function processNode (node: Element, preNode: Element | null, heading: List[]) {
   const curHeadLevel: number = praseH(node.localName)
   const preHeadLevel: number = preNode ? praseH(preNode.localName) : 0
   const item: List = {
+    level: curHeadLevel,
     ele: null,
     children: []
   }
@@ -153,13 +178,14 @@ function processNode (node: Element, preNode: Element | null, heading: List[]) {
   // 如果层级相同, 找到前一 tag 的父节点 append 这节点
   if (curHeadLevel === preHeadLevel) {
     item.ele = node
+    item.level = curHeadLevel
     lastBranches(heading).push(item)
   } else if (curHeadLevel > preHeadLevel) {
     // If current heading level is lower than previous heading level,
     // find the parent of the last leaf of heading node and append it.
     const distance: number = curHeadLevel - preHeadLevel
     lastLeaf(heading).push(
-      nestNode(distance - 1, node)
+      nestNode(distance - 1, node, curHeadLevel)
     )
   } else {
     item.ele = node
@@ -181,16 +207,16 @@ function renderToc () {
   hideAllTocSubHeading(tocElement!)
 }
 
-export default {
-  generate ({ heading = ['h2', 'h3', 'h4', 'h5'], selector = '#toc' }: Params) {
-    tocSelector = selector
-    const tocHeader = heading.join(',')
-    const headingNode: NodeListOf<Element> = document.querySelector('.post-content')!.querySelectorAll(tocHeader)
-    let previousNode: Element | null
-    headingNode.forEach((hNode: Element, index: number) => {
-      previousNode = index === 0 ? null : headingNode[index - 1]
-      processNode(hNode, previousNode, headingList)
-    })
-    renderToc()
-  }
+generatoc.init = function ({content , heading = ['h2', 'h3', 'h4', 'h5'], selector = '#toc' }: Params) {
+  tocSelector = selector
+  const tocHeader = heading.join(',')
+  const headingNode: NodeListOf<Element> = document.querySelector(content)!.querySelectorAll(tocHeader)
+  let previousNode: Element | null
+  headingNode.forEach((hNode: Element, index: number) => {
+    previousNode = index === 0 ? null : headingNode[index - 1]
+    processNode(hNode, previousNode, headingList)
+  })
+  renderToc()
 }
+
+export default generatoc

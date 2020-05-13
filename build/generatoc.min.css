@@ -1,0 +1,3 @@
+body{--toc-color:#1b81b8}#toc{position:fixed;left:50%;top:20%;margin-left:400px;border-left:1px solid #ddd}#toc a{display:block;color:#ccc}#toc a:hover{padding:0}#toc .active a,#toc a:hover{color:var(--toc-color)}#toc ul{margin-left:1em}#toc li{display:block}@media only screen and (max-width:540px){#toc{display:none}}
+
+/*# sourceMappingURL=generatoc.min.css.map*/
