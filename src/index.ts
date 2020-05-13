@@ -38,6 +38,7 @@ function lastBranches (k: List[]): List[] {
   }
   return lastArray
 }
+
 function lastLeaf (k: List[]): List[] {
   let lastLeafNode: List[] = k
   while (lastLeafNode.length !== 0) {

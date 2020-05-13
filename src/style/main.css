@@ -31,6 +31,6 @@
 
 @media only screen and (max-width: 540px) {
   #toc {
-      display: none;
+    display: none;
   }
 }
