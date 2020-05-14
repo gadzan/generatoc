@@ -35,6 +35,7 @@
   "homepage": "https://github.com/gadzan/generatoc/",
   "devDependencies": {
     "@rollup/plugin-typescript": "^4.1.1",
+    "awesome-typescript-loader": "^5.2.1",
     "css-loader": "^3.5.3",
     "cssnano": "^4.1.10",
     "mini-css-extract-plugin": "^0.9.0",
