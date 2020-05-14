@@ -149,9 +149,10 @@ function getRealUl (element: HTMLElement | Element): HTMLCollection | undefined 
 
 function showEvent (e: Event) {
   e.stopPropagation()
+  console.log(e)
   hideAllTocSubHeading(document.querySelector(tocSelector)!)
   const element = <HTMLElement>e.target
-  const uls = getRealUl(element.children[1])
+  const uls = getRealUl(element.parentElement!.parentElement!.children[1])
   if (uls) {
     Array.prototype.forEach.call(uls, (ul: HTMLElement) => {
       ul.style.display = 'block'
