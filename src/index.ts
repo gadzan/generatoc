@@ -1,4 +1,18 @@
- /// <reference path=".d.ts"/>
+interface List {
+  level: number | null;
+  ele: Element | null;
+  children: List[];
+}
+
+interface Params {
+  content: string;
+  heading?: string[];
+  selector?: string;
+}
+
+interface Generatoc {
+  init?: ({}: Params) => void
+}
 
 let tocSelector: string = '#toc'
 
