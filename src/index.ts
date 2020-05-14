@@ -11,14 +11,12 @@ interface Params {
 }
 
 interface Generatoc {
-  init?: ({}: Params) => void
+  init: ({}: Params) => void
 }
 
 let tocSelector: string = '#toc'
 
 const headingList: List[] = []
-
-const generatoc: Generatoc = {}
 
 function last (arr: any[]) {
   return arr[arr.length - 1]
@@ -206,17 +204,18 @@ function renderToc () {
   })
   hideAllTocSubHeading(tocElement!)
 }
-
-generatoc.init = function ({content , heading = ['h2', 'h3', 'h4', 'h5'], selector = '#toc' }: Params) {
-  tocSelector = selector
-  const tocHeader = heading.join(',')
-  const headingNode: NodeListOf<Element> = document.querySelector(content)!.querySelectorAll(tocHeader)
-  let previousNode: Element | null
-  headingNode.forEach((hNode: Element, index: number) => {
-    previousNode = index === 0 ? null : headingNode[index - 1]
-    processNode(hNode, previousNode, headingList)
-  })
-  renderToc()
+const generatoc: Generatoc = {
+  init: function ({content , heading = ['h2', 'h3', 'h4', 'h5'], selector = '#toc' }: Params) {
+    tocSelector = selector
+    const tocHeader = heading.join(',')
+    const headingNode: NodeListOf<Element> = document.querySelector(content)!.querySelectorAll(tocHeader)
+    let previousNode: Element | null
+    headingNode.forEach((hNode: Element, index: number) => {
+      previousNode = index === 0 ? null : headingNode[index - 1]
+      processNode(hNode, previousNode, headingList)
+    })
+    renderToc()
+  }
 }
 
 export default generatoc
