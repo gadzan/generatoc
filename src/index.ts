@@ -1,24 +1,10 @@
-
-interface List {
-  level: number | null;
-  ele: Element | null;
-  children: List[];
-}
-
-interface Params {
-  content: string;
-  heading?: string[];
-  selector?: string;
-}
-
-// interface Generatoc {
-//   init?: Function
-// }
+ /// <reference path=".d.ts"/>
 
 let tocSelector: string = '#toc'
+
 const headingList: List[] = []
 
-// const generatoc: Generatoc = {}
+const generatoc: Generatoc = {}
 
 function last (arr: any[]) {
   return arr[arr.length - 1]
@@ -207,7 +193,7 @@ function renderToc () {
   hideAllTocSubHeading(tocElement!)
 }
 
-function generatoc ({content , heading = ['h2', 'h3', 'h4', 'h5'], selector = '#toc' }: Params) {
+generatoc.init = function ({content , heading = ['h2', 'h3', 'h4', 'h5'], selector = '#toc' }: Params) {
   tocSelector = selector
   const tocHeader = heading.join(',')
   const headingNode: NodeListOf<Element> = document.querySelector(content)!.querySelectorAll(tocHeader)
