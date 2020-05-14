@@ -69,5 +69,14 @@ const selector = '#toc'
 generatoc.init({ content, heading, selector })
 ```
 
+### One more thing
+
+** If the `selector` is not `#toc` you have to modify css file manully **, just replace all `#toc` string with your selector name in css file which can be found at `./node_modules/generatoc/src/style/main.css`
+
+## TODO
+
+- [x] Destory method
+- [x] Reload method
+
 ## LICENSE
 MIT

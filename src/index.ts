@@ -1,4 +1,5 @@
 interface List {
+  index: number;
   level: number | null;
   ele: Element | null;
   children: List[];
@@ -11,12 +12,17 @@ interface Params {
 }
 
 interface Generatoc {
-  init: ({}: Params) => void
+  init: ({ content, heading, selector }: Params) => void;
+  destroy: () => void;
+  refresh: () => void;
 }
 
+let tocContent: string = ''
+let tocHeader: string = ''
 let tocSelector: string = '#toc'
 
-const headingList: List[] = []
+let headingList: List[] = []
+let headingNode: NodeListOf<Element>
 
 function last (arr: any[]) {
   return arr[arr.length - 1]
@@ -47,8 +53,9 @@ function lastLeaf (k: List[]): List[] {
   return lastLeafNode
 }
 
-function nestNode (times: number, node: Element, level: number): List {
+function nestNode (times: number, node: Element, level: number, index: number): List {
   const template: List = {
+    index,
     level: null,
     ele: null,
     children: []
@@ -58,14 +65,15 @@ function nestNode (times: number, node: Element, level: number): List {
     template.ele = node
   } else {
     template.level = level - times
-    template.children = [nestNode(--times, node, level)]
+    template.children = [nestNode(--times, node, level, index)]
   }
   return template
 }
 
-function getLastHeadingParentOf (level: number, headings: List[]): List {
+function getLastHeadingParentOf (level: number, headings: List[], index: number): List {
   let tmp = last(headings)
   let parent = {
+    index,
     level: null,
     ele: null,
     children: headings
@@ -73,8 +81,8 @@ function getLastHeadingParentOf (level: number, headings: List[]): List {
   while (!tmp.ele || tmp.level !== level) {
     parent = tmp
     tmp = last(tmp.children)
-    if(typeof tmp === 'undefined') {
-      break;
+    if (typeof tmp === 'undefined') {
+      break
     }
   }
   return parent
@@ -84,10 +92,11 @@ function createUl (): HTMLElement {
   return document.createElement('ul')
 }
 
-function createLi (content: string | null): Element {
+function createLi (content: string | null, index: number): Element {
   const li: Element = document.createElement('li')
   li.setAttribute('style', 'cursor: pointer;')
   const a: Element = document.createElement('a')
+  a.setAttribute('data-toc-index', index.toString())
   a.innerHTML = content || ''
   li.appendChild(a)
   return li
@@ -106,10 +115,14 @@ function hideAllTocSubHeading (element: Element) {
   })
 }
 
-function setScrollEvent (element: Element, node: Element) {
-  element.addEventListener('click', function (_e: Event) {
-    node.scrollIntoView({ behavior: 'smooth' })
-  })
+function scrollEvent (e: Event) {
+  const element = <HTMLElement>(e.target)
+  const index = element.getAttribute('data-toc-index')
+  headingNode[+index!].scrollIntoView({ behavior: 'smooth' })
+}
+
+function setScrollEvent (element: Element) {
+  element.addEventListener('click', scrollEvent)
 }
 
 function traceParentAndShow (ele: HTMLElement) {
@@ -121,11 +134,11 @@ function traceParentAndShow (ele: HTMLElement) {
   }
 }
 
-function getRealUl(element: HTMLElement | Element): HTMLCollection | undefined {
-  if(!element || !element.children[0]) {
+function getRealUl (element: HTMLElement | Element): HTMLCollection | undefined {
+  if (!element || !element.children[0]) {
     return undefined
   }
-  if(element.children[0].tagName.toLowerCase() === 'ul') {
+  if (element.children[0].tagName.toLowerCase() === 'ul') {
     Array.prototype.forEach.call(element.children, (ul: HTMLElement) => {
       ul.style.display = 'block'
     })
@@ -134,25 +147,28 @@ function getRealUl(element: HTMLElement | Element): HTMLCollection | undefined {
   return element.children
 }
 
+function showEvent (e: Event) {
+  e.stopPropagation()
+  hideAllTocSubHeading(document.querySelector(tocSelector)!)
+  const element = <HTMLElement>e.target
+  const uls = getRealUl(element.children[1])
+  if (uls) {
+    Array.prototype.forEach.call(uls, (ul: HTMLElement) => {
+      ul.style.display = 'block'
+    })
+  }
+  traceParentAndShow(element)
+}
+
 function setShowEvent (element: HTMLElement) {
-  element.addEventListener('click', function (e: Event) {
-    e.stopPropagation()
-    hideAllTocSubHeading(document.querySelector(tocSelector)!)
-    const uls = getRealUl(element.children[1])
-    if(uls) {
-      Array.prototype.forEach.call(uls, (ul: HTMLElement) => {
-        ul.style.display = 'block'
-      })
-    }
-    traceParentAndShow(element)
-  })
+  element.addEventListener('click', showEvent)
 }
 
 function constructElements (item: List) {
   const ul = createUl()
   if (item.ele) {
-    const li = createLi(item.ele.textContent)
-    setScrollEvent(li, item.ele)
+    const li = createLi(item.ele.textContent, item.index)
+    setScrollEvent(li)
     setShowEvent(ul)
     ul.append(li)
   }
@@ -164,10 +180,11 @@ function constructElements (item: List) {
   return ul
 }
 
-function processNode (node: Element, preNode: Element | null, heading: List[]) {
+function processNode (node: Element, preNode: Element | null, heading: List[], index: number) {
   const curHeadLevel: number = praseH(node.localName)
   const preHeadLevel: number = preNode ? praseH(preNode.localName) : 0
   const item: List = {
+    index,
     level: curHeadLevel,
     ele: null,
     children: []
@@ -183,13 +200,13 @@ function processNode (node: Element, preNode: Element | null, heading: List[]) {
     // find the parent of the last leaf of heading node and append it.
     const distance: number = curHeadLevel - preHeadLevel
     lastLeaf(heading).push(
-      nestNode(distance - 1, node, curHeadLevel)
+      nestNode(distance - 1, node, curHeadLevel, index)
     )
   } else {
     item.ele = node
     // Find parent node of the last same level and append it
     // 找到最后一个同一层级的父节点 append 上当前节点
-    getLastHeadingParentOf(curHeadLevel, heading).children.push(item)
+    getLastHeadingParentOf(curHeadLevel, heading, index).children.push(item)
   }
 }
 
@@ -199,22 +216,52 @@ function renderToc () {
     // eslint-disable-next-line no-console
     console.error('Toc element not found!')
   }
+  if (!headingList[0]) {
+    return
+  }
+  headingList[0].index = -1
   Array.prototype.forEach.call(headingList[0].children, (item: List) => {
     tocElement!.appendChild(constructElements(item))
   })
   hideAllTocSubHeading(tocElement!)
 }
+
 const generatoc: Generatoc = {
-  init: function ({content , heading = ['h2', 'h3', 'h4', 'h5'], selector = '#toc' }: Params) {
+  init ({ content, heading = ['h2', 'h3', 'h4', 'h5'], selector = '#toc' }: Params) {
     tocSelector = selector
-    const tocHeader = heading.join(',')
-    const headingNode: NodeListOf<Element> = document.querySelector(content)!.querySelectorAll(tocHeader)
+    tocHeader = heading.join(',')
+    tocContent = content
+    headingNode = document.querySelector(tocContent)!.querySelectorAll(tocHeader)
     let previousNode: Element | null
     headingNode.forEach((hNode: Element, index: number) => {
       previousNode = index === 0 ? null : headingNode[index - 1]
-      processNode(hNode, previousNode, headingList)
+      processNode(hNode, previousNode, headingList, index)
     })
     renderToc()
+  },
+  destroy () {
+    const tocElement = document.querySelector(tocSelector)
+    if (!tocElement) {
+      return
+    }
+    tocElement.querySelectorAll('ul')
+      .forEach((ulNode: Element) => {
+        ulNode.removeEventListener('click', showEvent)
+      })
+    tocElement.querySelectorAll('li')
+      .forEach((liNode: Element) => {
+        liNode.removeEventListener('click', scrollEvent)
+      })
+    headingList = []
+    tocElement.innerHTML = ''
+  },
+  refresh () {
+    generatoc.destroy()
+    generatoc.init({
+      content: tocContent,
+      heading: tocHeader.split(','),
+      selector: tocSelector
+    })
   }
 }
 
