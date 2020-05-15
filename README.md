@@ -80,16 +80,16 @@ npm run dev
 
 ### One more thing
 
-** If the `selector` is not `#toc` you have to modify css file manully **, just replace all `#toc` string with your selector name in css file which can be found at `./node_modules/generatoc/src/style/main.css`
+**If the `selector` is not `#toc` you have to modify css file manully**, just replace all `#toc` string with your selector name in css file which can be found at `./node_modules/generatoc/src/style/main.css`
 
 ## TODO
 
 - [x] Destory method
 - [x] Reload method
 - [x] Development env
-- [] Test cases
-- [] Show and close animation
-- [] More configuration
+- [ ] Test cases
+- [ ] Show and close animation
+- [ ] More configuration
 
 ## LICENSE
 MIT
