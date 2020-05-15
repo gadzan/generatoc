@@ -4,15 +4,18 @@ GeneraToc generates a table of contents (TOC) from headings in an HTML document.
 
 This library was inspired by [Tocify](https://github.com/gfranko/jquery.tocify.js) and [Tocbot](https://github.com/tscanlin/tocbot), but GeneraToc **uses native DOM** methods with **no other dependencies** and unlike Tocbot, GeneraToc does **NOT rely on id attribute** to navigate to the heading.
 
+## DEMO
+
+[https://gadzan.github.io/generatoc/demo/](https://gadzan.github.io/generatoc/demo/)
+
 ## Installation
 
 Install it with npm.
-```
+```bash
 npm install --save generatoc
 ```
 
 OR Install it with yarn.
-
 ```bash
 yarn add generatoc
 ```
@@ -69,6 +72,12 @@ const selector = '#toc'
 generatoc.init({ content, heading, selector })
 ```
 
+## Development
+
+```bash
+npm run dev
+```
+
 ### One more thing
 
 ** If the `selector` is not `#toc` you have to modify css file manully **, just replace all `#toc` string with your selector name in css file which can be found at `./node_modules/generatoc/src/style/main.css`
@@ -77,6 +86,10 @@ generatoc.init({ content, heading, selector })
 
 - [x] Destory method
 - [x] Reload method
+- [x] Development env
+- [] Test cases
+- [] Show and close animation
+- [] More configuration
 
 ## LICENSE
 MIT

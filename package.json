@@ -1,11 +1,12 @@
 {
   "name": "generatoc",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "Automatically generate table of content from heading of HTML document",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c",
+    "dev": "rollup -w -c rollup.config.dev.js",
     "release": "npm publish"
   },
   "repository": {
@@ -41,6 +42,8 @@
     "postcss-preset-env": "^6.7.0",
     "rollup": "^2.10.0",
     "rollup-plugin-postcss": "^3.1.1",
+    "rollup-plugin-serve": "^1.0.1",
+    "rollup-plugin-sourcemaps": "^0.6.2",
     "rollup-plugin-terser": "^5.3.0",
     "rollup-plugin-typescript2": "^0.27.1",
     "tslib": "^2.0.0",

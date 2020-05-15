@@ -27,10 +27,12 @@ body {
 
 #toc ul {
   margin-left: 1em;
+  transition: all .2s ease-out;
 }
 
 #toc li {
   display: block;
+  transition: all .2s ease-out;
 }
 
 @media only screen and (max-width: 540px) {

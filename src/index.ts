@@ -78,7 +78,7 @@ function getLastHeadingParentOf (level: number, headings: List[], index: number)
     ele: null,
     children: headings
   }
-  while (!tmp.ele || tmp.level !== level) {
+  while (tmp.level !== level) {
     parent = tmp
     tmp = last(tmp.children)
     if (typeof tmp === 'undefined') {
@@ -134,30 +134,27 @@ function traceParentAndShow (ele: HTMLElement) {
   }
 }
 
-function getRealUl (element: HTMLElement | Element): HTMLCollection | undefined {
-  if (!element || !element.children[0]) {
+function showRealUlChildren (element: HTMLElement | Element): HTMLCollection | undefined {
+  if (!element || !element.children || element.children.length === 0) {
     return undefined
   }
   if (element.children[0].tagName.toLowerCase() === 'ul') {
-    Array.prototype.forEach.call(element.children, (ul: HTMLElement) => {
-      ul.style.display = 'block'
+    Array.prototype.forEach.call(element.children, (ele: HTMLElement) => {
+      if (ele.tagName.toLowerCase() === 'ul') {
+        ele.style.display = 'block'
+      }
     })
-    return getRealUl(element.children[0])
+    return showRealUlChildren(element.children[0])
   }
-  return element.children
+  (<HTMLElement>element).style.display = 'block'
 }
 
 function showEvent (e: Event) {
   e.stopPropagation()
-  console.log(e)
+  // console.log(e)
   hideAllTocSubHeading(document.querySelector(tocSelector)!)
   const element = <HTMLElement>e.target
-  const uls = getRealUl(element.parentElement!.parentElement!.children[1])
-  if (uls) {
-    Array.prototype.forEach.call(uls, (ul: HTMLElement) => {
-      ul.style.display = 'block'
-    })
-  }
+  const ul = showRealUlChildren(element.parentElement!.parentElement!.children[1])
   traceParentAndShow(element)
 }
 
@@ -238,6 +235,7 @@ const generatoc: Generatoc = {
       previousNode = index === 0 ? null : headingNode[index - 1]
       processNode(hNode, previousNode, headingList, index)
     })
+    console.log('headingList', headingList)
     renderToc()
   },
   destroy () {

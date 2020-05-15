@@ -1,5 +1,4 @@
 import path from 'path';
-// import typescript from '@rollup/plugin-typescript';
 import typescript from 'rollup-plugin-typescript2';
 import babel from '@rollup/plugin-babel'
 import postcss from 'rollup-plugin-postcss';
@@ -7,19 +6,19 @@ import { terser } from "rollup-plugin-terser";
 
 const babelOptions = {
   presets: ['@babel/preset-env'],
+  babelHelpers: 'bundled'
 }
 
 export default [
+  // Output esm version to dist folder
   {
     input: [
       path.resolve(__dirname, 'src', 'index.ts'),
     ],
-    output: [
-      {
-        file: path.resolve(__dirname, 'dist','index.js'),
-        format: 'esm',
-      },
-    ],
+    output: {
+      file: path.resolve(__dirname, 'dist','index.js'),
+      format: 'esm',
+    },
     plugins: [
       typescript({
         typescript: require('typescript'),
@@ -32,19 +31,18 @@ export default [
       babel(babelOptions)
     ]
   },
+  // Output browser version to build folder
   {
     input: {
       'generatoc.min': path.resolve(__dirname, 'src','build.ts'),
     },
-    output: [
-      {
-        dir: 'build',
-        // file: path.resolve(__dirname, 'build','generatoc.min.js'),
-        format: 'iife',
-        name: 'generatoc',
-        plugins: [ terser() ]
-      }
-    ],
+    output: {
+      dir: 'build',
+      // file: path.resolve(__dirname, 'build','generatoc.min.js'),
+      format: 'iife',
+      name: 'generatoc',
+      plugins: [ terser() ]
+    },
     plugins: [
       typescript({
         typescript: require('typescript'),
@@ -55,8 +53,6 @@ export default [
         minimize: true,
       }),
       babel(babelOptions),
-      // terser()
     ]
   }
 ]
-
