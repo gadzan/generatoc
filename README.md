@@ -3,10 +3,10 @@
 ![Travis Build](https://img.shields.io/travis/com/gadzan/generatoc?logo=travis&style=for-the-badge)
 ![npm 20downloads](https://img.shields.io/npm/dt/generatoc?label=npm%20downloads&logo=npm&style=for-the-badge)
 ![npm bundle size](https://img.shields.io/bundlephobia/min/generatoc?style=for-the-badge)
+![Coveralls github](https://img.shields.io/coveralls/github/gadzan/generatoc?style=for-the-badge)
 ![License](https://img.shields.io/npm/l/generatoc?style=for-the-badge)
 ![Version](https://img.shields.io/npm/v/generatoc?logo=npm&label=version&style=for-the-badge)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/gadzan/generatoc?logo=github&style=for-the-badge)
-![Coveralls github](https://img.shields.io/coveralls/github/gadzan/generatoc?style=for-the-badge)
 
 GeneraToc generates a table of contents (TOC) from headings in an HTML document. This is useful for documentation websites or SSR pages because it makes them easier to navigate. 
 
