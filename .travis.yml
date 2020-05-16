@@ -1,0 +1,63 @@
+language : node_js
+
+node_js:
+  - "12"
+
+branchs:
+  only:
+    - master
+
+cache:
+  directories:
+    - node_modules
+
+install:
+- yarn install
+
+git:
+  depth: 1
+
+stages:
+  - name: Build
+  - name: Test
+  - name: Deploy
+
+jobs:
+  include:
+    - stage: Build
+      if: branch = master
+      script:
+        - node --version
+        - npm --version
+        - echo "Building Started ..."
+        - yarn build
+        - echo "Building Finished."
+
+    - stage: Test
+      if: branch = master
+      script:
+        - node --version
+        - yarn --version
+        - echo "Testing Started ..."
+        - yarn test
+        - echo "Testing Finished."
+
+    - stage: Deploy
+      if: branch = master
+      script:
+        - echo "Deploy Started ..."
+      deploy:
+        provider: npm
+        email: "$NPM_EMAIL"
+        api_key: "$NPM_TOKEN"
+        skip_cleanup: true
+        on:
+          branch: master
+
+notifications:
+  email:
+    if: branch = master
+    recipients:
+      - "$NPM_EMAIL"
+    on_success: change
+    on_failure: always
