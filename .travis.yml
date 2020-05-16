@@ -3,7 +3,7 @@ language : node_js
 node_js:
   - "12"
 
-branchs:
+branches:
   only:
     - master
 
@@ -50,7 +50,7 @@ jobs:
         provider: npm
         email: "$NPM_EMAIL"
         api_key: "$NPM_TOKEN"
-        skip_cleanup: true
+        cleanup: false
         on:
           branch: master
 
