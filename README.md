@@ -79,6 +79,10 @@ const selector = '#toc'
 generatoc.init({ content, heading, selector })
 ```
 
+### You need to know when importing css file
+
+**If the `selector` is not `#toc` you have to modify css file manully**, just replace all `#toc` string with your selector name in css file which can be found at `./node_modules/generatoc/src/style/main.css`
+
 ## Development
 
 ```bash
@@ -86,18 +90,23 @@ yarn install
 npm run dev
 ```
 
-### One more thing
-
-**If the `selector` is not `#toc` you have to modify css file manully**, just replace all `#toc` string with your selector name in css file which can be found at `./node_modules/generatoc/src/style/main.css`
-
 ## TODO
 
 - [x] Destory method
 - [x] Reload method
 - [x] Development env
-- [ ] Test cases
+- [x] Test cases
 - [ ] Show and close animation
 - [ ] More configuration
+
+## Using with SSR
+
+If you are using GeneraToc with SSR framwork, like Nuxt.js, please add `transpile` param to `nuxt.config.js`
+```
+build: {
+  transpile: ['generatoc']
+}
+```
 
 ## LICENSE
 MIT

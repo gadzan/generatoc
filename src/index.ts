@@ -235,7 +235,7 @@ const generatoc: Generatoc = {
       previousNode = index === 0 ? null : headingNode[index - 1]
       processNode(hNode, previousNode, headingList, index)
     })
-    console.log('headingList', headingList)
+    // console.log('headingList', headingList)
     renderToc()
   },
   destroy () {

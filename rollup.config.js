@@ -5,7 +5,10 @@ import postcss from 'rollup-plugin-postcss';
 import { terser } from "rollup-plugin-terser";
 
 const babelOptions = {
-  presets: ['@babel/preset-env'],
+  presets: [
+    ['@babel/preset-env', {targets: {node: 'current'}}],
+    '@babel/preset-typescript',
+  ],
   babelHelpers: 'bundled'
 }
 
