@@ -35,11 +35,9 @@ jobs:
 
     - stage: Deploy
       if: branch = master
-      script:
-        - echo "Building Started ..."
+      before_deploy:
+        - mkdir dist
         - yarn build
-        - echo "Building Finished."
-        - echo "Deploy Started ..."
       deploy:
         provider: npm
         email: "$NPM_EMAIL"
