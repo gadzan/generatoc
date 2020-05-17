@@ -90,4 +90,4 @@ sw.*
 demo/
 
 # test folder
-__test__/
+__tests__/

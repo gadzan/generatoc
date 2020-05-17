@@ -36,13 +36,15 @@ jobs:
     - stage: Deploy
       if: branch = master
       before_deploy:
-        - mkdir dist
+        - echo "Build Started ..."
         - yarn build
+        - echo "Build Finished."
       deploy:
         provider: npm
         email: "$NPM_EMAIL"
         api_key: "$NPM_TOKEN"
         cleanup: false
+        skip_cleanup: true
         on:
           branch: master
 
