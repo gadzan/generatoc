@@ -24,15 +24,6 @@ stages:
 
 jobs:
   include:
-    - stage: Build
-      if: branch = master
-      script:
-        - node --version
-        - npm --version
-        - echo "Building Started ..."
-        - yarn build
-        - echo "Building Finished."
-
     - stage: Test
       if: branch = master
       script:
@@ -45,6 +36,9 @@ jobs:
     - stage: Deploy
       if: branch = master
       script:
+        - echo "Building Started ..."
+        - yarn build
+        - echo "Building Finished."
         - echo "Deploy Started ..."
       deploy:
         provider: npm
