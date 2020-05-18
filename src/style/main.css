@@ -14,6 +14,7 @@ body {
 #toc a {
   display: block;
   color: #cccccc;
+  transition: color .6s ease-in-out;
 }
 
 #toc a:hover {
@@ -27,12 +28,13 @@ body {
 
 #toc ul {
   margin-left: 1em;
-  transition: all .2s ease-out;
+  transition: all .6s ease-in-out;
+  transform-origin: 50% 0;
 }
 
 #toc li {
+  list-style: none;
   display: block;
-  transition: all .2s ease-out;
 }
 
 @media only screen and (max-width: 540px) {

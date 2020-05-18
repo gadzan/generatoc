@@ -91,14 +91,23 @@ yarn install
 npm run dev
 ```
 
+## Other init options
+```
+// **scrollHistory**: Accepts a boolean: true or false
+// Adds a hash to the page url, to maintain history, when scrolling to a TOC item
+{
+  scrollHistory: false
+}
+```
+
 ## TODO
 
 - [x] Destory method
 - [x] Reload method
 - [x] Development env
 - [x] Test cases
-- [ ] Show and close animation
-- [ ] More configuration
+- [x] Show and close animation
+- [ ] More configurations
 
 ## Using with SSR
 

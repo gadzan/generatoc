@@ -9,6 +9,7 @@ interface Params {
   content: string;
   heading?: string[];
   selector?: string;
+  scrollHistory?: boolean;
 }
 
 interface Generatoc {
@@ -23,6 +24,10 @@ let tocSelector: string = '#toc'
 
 let headingList: List[] = []
 let headingNode: NodeListOf<Element>
+let extendPageOffset: number = 100
+let scrollHistoryConfig: boolean = false
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Utils ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 function last (arr: any[]) {
   return arr[arr.length - 1]
@@ -30,6 +35,49 @@ function last (arr: any[]) {
 
 function praseH (h: string): number {
   return +h.substr(1)
+}
+
+function hasClass(elements: HTMLElement, className: string) {
+  return !!elements.className.match(new RegExp("(\\s|^)" + className + "(\\s|$)"))
+}
+
+function addClass(elements: HTMLElement | null, className: string) {
+  if(elements && !hasClass(elements, className)) {
+    const trimedClass = elements.className.trim()
+    elements.className = trimedClass ? trimedClass + " " + className : className
+  }
+}
+
+function removeClass(elements: HTMLElement | null, className: string) {
+  if(elements && hasClass(elements, className)) {
+    elements.className = elements.className.replace(new RegExp("(\\s|^)" + className + "(\\s|$)" ), "")
+  }
+}
+
+function elementOffset(ele: Element) {
+  let result = {
+    top: 0,
+    left: 0
+  }
+  if (!ele.getClientRects().length) {
+    return result
+  }
+  if (window.getComputedStyle(ele)['display'] === 'none') {
+    return result
+  }
+  result = ele.getBoundingClientRect()
+  let document = ele.ownerDocument!.documentElement
+  return {
+    top: result.top + window.pageYOffset - document.clientTop,
+    left: result.left + window.pageXOffset - document.clientLeft
+  }
+}
+
+function getScrollTop() {
+  return window.pageYOffset 
+      || document.documentElement.scrollTop  
+      || document.body.scrollTop  
+      || 0;
 }
 
 function lastBranches (k: List[]): List[] {
@@ -103,32 +151,106 @@ function createLi (content: string | null, index: number): Element {
 }
 
 function hideAllTocSubHeading (element: Element) {
-  Array.prototype.forEach.call(element.children, (item: Element) => {
+  Array.prototype.forEach.call(element.children, (item: HTMLElement) => {
+    removeClass(item.querySelector('li'), 'active')
     const eles = item.querySelectorAll('ul')
     if (eles) {
       Array.prototype.forEach.call(eles, (ele: HTMLElement) => {
         if (ele) {
-          ele.style.display = 'none'
+          removeClass(ele.querySelector('li'), 'active')
+          ele.style.transform = 'scaleY(0)'
+          ele.style.maxHeight = '0px'
         }
       })
     }
   })
 }
 
-function scrollEvent (e: Event) {
+function throttle (fn: Function, interval: number = 500) {
+  let timer: any = null;
+  let firstTime: boolean = true;
+  return function (this: any, ...args: any) {
+      if (firstTime) {
+          fn.apply(this, args);
+          return firstTime = false;
+      }
+      if (timer) {
+        // 定时器正在执行中，跳过
+          return;
+      }
+      timer = setTimeout(() => {
+          clearTimeout(timer);
+          timer = null;
+          fn.apply(this, args);
+      }, interval);
+  };
+}
+
+// ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ Utils ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Handle events ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+function handlePageChange () {
+  const winScrollTop: number = getScrollTop()
+  const docHeight: number = document.body.offsetHeight
+  const winHeight: number = window.innerHeight
+  const scrollHeight: number = document.body.scrollHeight
+  let elem: HTMLElement | null
+  let lastElem, lastElemOffset, currentElem
+
+  // If scrolled to the bottom of the page
+  if ((winScrollTop >= scrollHeight - winHeight - extendPageOffset) || (winHeight + winScrollTop > docHeight - extendPageOffset)) {
+    // TODO
+  }
+
+  window.requestAnimationFrame(function() {
+    let closestAnchorDistance: number | null = null
+
+    // Stores the index of the closest anchor
+    let closestAnchorIdx: number = 0
+
+    let anchorText: string | null = null
+
+    headingNode.forEach((hNode: Element, index: number) => {
+      const distance = Math.abs(elementOffset(hNode.nextElementSibling ? hNode.nextElementSibling : hNode).top - winScrollTop)
+      if (closestAnchorDistance == null || distance < closestAnchorDistance) {
+        closestAnchorDistance = distance;
+        closestAnchorIdx = index;
+      } else {
+          return false;
+      }
+    })
+    anchorText = (<HTMLElement>headingNode[closestAnchorIdx]).innerText
+    elem = <HTMLElement>document.querySelector('a[data-toc-index="' + closestAnchorIdx + '"]')!.parentNode!.parentNode
+    if (elem) {
+      triggerShow(elem)
+    }
+    addClass(elem.querySelector('li'), 'active')
+    if(scrollHistoryConfig && window.location.hash !== "#" + anchorText) {
+      window.location.replace("#" + anchorText);
+    }
+  })
+}
+
+function clickEvent (e: Event) {
+  e.stopPropagation()
   const element = <HTMLElement>(e.target)
+  // addClass(element.parentElement, 'active')
   const index = element.getAttribute('data-toc-index')
   headingNode[+index!].scrollIntoView({ behavior: 'smooth' })
 }
 
 function setScrollEvent (element: Element) {
-  element.addEventListener('click', scrollEvent)
+  element.addEventListener('click', clickEvent)
 }
 
 function traceParentAndShow (ele: HTMLElement) {
   if (ele.id !== tocSelector.substr(1)) {
     Array.prototype.forEach.call(ele.children, (item: HTMLElement) => {
-      item.style.display = 'block'
+      if (item.tagName.toLowerCase() === 'ul') {
+        item.style.transform = 'scaleY(1)'
+        item.style.maxHeight = '200px'
+      }
     })
     traceParentAndShow(ele.parentElement!)
   }
@@ -141,25 +263,33 @@ function showRealUlChildren (element: HTMLElement | Element): HTMLCollection | u
   if (element.children[0].tagName.toLowerCase() === 'ul') {
     Array.prototype.forEach.call(element.children, (ele: HTMLElement) => {
       if (ele.tagName.toLowerCase() === 'ul') {
-        ele.style.display = 'block'
+        ele.style.transform = 'scaleY(1)'
+        ele.style.maxHeight = '200px'
       }
     })
     return showRealUlChildren(element.children[0])
   }
-  (<HTMLElement>element).style.display = 'block'
+  // (<HTMLElement>element).style.transform = 'scaleY(1)';
+  // (<HTMLElement>element).style.height = 'auto'
 }
 
 function showEvent (e: Event) {
   e.stopPropagation()
-  // console.log(e)
-  hideAllTocSubHeading(document.querySelector(tocSelector)!)
-  const element = <HTMLElement>e.target
-  const ul = showRealUlChildren(element.parentElement!.parentElement!.children[1])
-  traceParentAndShow(element)
+  triggerShow(<HTMLElement>e.target)
 }
 
 function setShowEvent (element: HTMLElement) {
   element.addEventListener('click', showEvent)
+}
+
+// ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ Handle events ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+
+// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Handle elements ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+
+function triggerShow (element: HTMLElement) {
+  hideAllTocSubHeading(document.querySelector(tocSelector)!)
+  showRealUlChildren(element.parentElement!.parentElement!.children[1])
+  traceParentAndShow(element)
 }
 
 function constructElements (item: List) {
@@ -181,6 +311,7 @@ function constructElements (item: List) {
 function processNode (node: Element, preNode: Element | null, heading: List[], index: number) {
   const curHeadLevel: number = praseH(node.localName)
   const preHeadLevel: number = preNode ? praseH(preNode.localName) : 0
+
   const item: List = {
     index,
     level: curHeadLevel,
@@ -212,7 +343,8 @@ function renderToc () {
   const tocElement: Element | null = document.querySelector(tocSelector)
   if (tocElement === null) {
     // eslint-disable-next-line no-console
-    console.error('Toc element not found!')
+    console.log('Toc element not found!')
+    return
   }
   if (!headingList[0]) {
     return
@@ -221,21 +353,32 @@ function renderToc () {
   Array.prototype.forEach.call(headingList[0].children, (item: List) => {
     tocElement!.appendChild(constructElements(item))
   })
-  hideAllTocSubHeading(tocElement!)
+  window.addEventListener("scroll" , throttle(handlePageChange), false);
 }
 
+// ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ Handle elements ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+
 const generatoc: Generatoc = {
-  init ({ content, heading = ['h2', 'h3', 'h4', 'h5'], selector = '#toc' }: Params) {
+  init ({
+    content,
+    heading = ['h2', 'h3', 'h4', 'h5'],
+    selector = '#toc',
+    scrollHistory = false,
+  }: Params) {
     tocSelector = selector
     tocHeader = heading.join(',')
     tocContent = content
-    headingNode = document.querySelector(tocContent)!.querySelectorAll(tocHeader)
+    scrollHistoryConfig = scrollHistory
+    const postCotent = document.querySelector(tocContent)
+    if(!postCotent) {
+      return
+    }
+    headingNode = postCotent.querySelectorAll(tocHeader)
     let previousNode: Element | null
     headingNode.forEach((hNode: Element, index: number) => {
       previousNode = index === 0 ? null : headingNode[index - 1]
       processNode(hNode, previousNode, headingList, index)
     })
-    // console.log('headingList', headingList)
     renderToc()
   },
   destroy () {
@@ -249,10 +392,11 @@ const generatoc: Generatoc = {
       })
     tocElement.querySelectorAll('li')
       .forEach((liNode: Element) => {
-        liNode.removeEventListener('click', scrollEvent)
+        liNode.removeEventListener('click', clickEvent)
       })
     headingList = []
     tocElement.innerHTML = ''
+    window.removeEventListener("scroll" , handlePageChange);
   },
   refresh () {
     generatoc.destroy()
