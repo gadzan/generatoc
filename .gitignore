@@ -91,3 +91,6 @@ sw.*
 
 # Distribution folder
 dist/
+
+# VSCode config
+.vscode/

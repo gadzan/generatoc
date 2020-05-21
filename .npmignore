@@ -91,3 +91,6 @@ demo/
 
 # test folder
 __tests__/
+
+# VSCode config
+.vscode/

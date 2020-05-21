@@ -221,7 +221,11 @@ function handlePageChange () {
       }
     })
     anchorText = (<HTMLElement>headingNode[closestAnchorIdx]).innerText
-    elem = <HTMLElement>document.querySelector('a[data-toc-index="' + closestAnchorIdx + '"]')!.parentNode!.parentNode
+    const tocA = document.querySelector('a[data-toc-index="' + closestAnchorIdx + '"]')
+    if (!tocA || !tocA.parentNode) {
+      return
+    }
+    elem = <HTMLElement>tocA.parentNode.parentNode
     if (elem) {
       triggerShow(elem)
     }
