@@ -37,23 +37,6 @@ function praseH (h: string): number {
   return +h.substr(1)
 }
 
-function hasClass(elements: HTMLElement, className: string) {
-  return !!elements.className.match(new RegExp("(\\s|^)" + className + "(\\s|$)"))
-}
-
-function addClass(elements: HTMLElement | null, className: string) {
-  if(elements && !hasClass(elements, className)) {
-    const trimedClass = elements.className.trim()
-    elements.className = trimedClass ? trimedClass + " " + className : className
-  }
-}
-
-function removeClass(elements: HTMLElement | null, className: string) {
-  if(elements && hasClass(elements, className)) {
-    elements.className = elements.className.replace(new RegExp("(\\s|^)" + className + "(\\s|$)" ), "")
-  }
-}
-
 function elementOffset(ele: Element) {
   let result = {
     top: 0,
@@ -152,12 +135,12 @@ function createLi (content: string | null, index: number): Element {
 
 function hideAllTocSubHeading (element: Element) {
   Array.prototype.forEach.call(element.children, (item: HTMLElement) => {
-    removeClass(item.querySelector('li'), 'active')
+    item.querySelector('li')!.classList.remove('active')
     const eles = item.querySelectorAll('ul')
     if (eles) {
       Array.prototype.forEach.call(eles, (ele: HTMLElement) => {
         if (ele) {
-          removeClass(ele.querySelector('li'), 'active')
+          ele.querySelector('li')!.classList.remove('active')
           ele.style.transform = 'scaleY(0)'
           ele.style.maxHeight = '0px'
         }
@@ -171,17 +154,16 @@ function throttle (fn: Function, interval: number = 500) {
   let firstTime: boolean = true;
   return function (this: any, ...args: any) {
       if (firstTime) {
-          fn.apply(this, args);
-          return firstTime = false;
+        fn.apply(this, args);
+        return firstTime = false;
       }
       if (timer) {
-        // 定时器正在执行中，跳过
-          return;
+        return;
       }
       timer = setTimeout(() => {
-          clearTimeout(timer);
-          timer = null;
-          fn.apply(this, args);
+        clearTimeout(timer);
+        timer = null;
+        fn.apply(this, args);
       }, interval);
   };
 }
@@ -222,14 +204,16 @@ function handlePageChange () {
     })
     anchorText = (<HTMLElement>headingNode[closestAnchorIdx]).innerText
     const tocA = document.querySelector('a[data-toc-index="' + closestAnchorIdx + '"]')
-    if (!tocA || !tocA.parentNode) {
+    if (!tocA) {
       return
     }
-    elem = <HTMLElement>tocA.parentNode.parentNode
+    elem = <HTMLElement>tocA.closest('ul')
     if (elem) {
       triggerShow(elem)
+    } else {
+      return
     }
-    addClass(elem.querySelector('li'), 'active')
+    elem.querySelector('li')!.classList.add('active')
     if(scrollHistoryConfig && window.location.hash !== "#" + anchorText) {
       window.location.replace("#" + anchorText);
     }
@@ -239,7 +223,6 @@ function handlePageChange () {
 function clickEvent (e: Event) {
   e.stopPropagation()
   const element = <HTMLElement>(e.target)
-  // addClass(element.parentElement, 'active')
   const index = element.getAttribute('data-toc-index')
   headingNode[+index!].scrollIntoView({ behavior: 'smooth' })
 }
@@ -291,8 +274,11 @@ function setShowEvent (element: HTMLElement) {
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Handle elements ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 function triggerShow (element: HTMLElement) {
+  if(!element) return
+  const closestUl = element.closest('ul')
+  if (!closestUl) return
   hideAllTocSubHeading(document.querySelector(tocSelector)!)
-  showRealUlChildren(element.parentElement!.parentElement!.children[1])
+  showRealUlChildren(closestUl.children[1])
   traceParentAndShow(element)
 }
 
