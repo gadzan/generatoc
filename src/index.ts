@@ -343,7 +343,9 @@ function renderToc () {
   Array.prototype.forEach.call(headingList[0].children, (item: List) => {
     tocElement!.appendChild(constructElements(item))
   })
-  window.addEventListener("scroll" , throttle(handlePageChange), false);
+  if(headingNode.length > 0) {
+    window.addEventListener("scroll" , throttle(handlePageChange), false);
+  }
 }
 
 // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ Handle elements ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
