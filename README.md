@@ -29,6 +29,7 @@ OR Install it with yarn.
 yarn add generatoc
 ```
 
+OR include in browser environment
 include the script at the bottom of the page before the closing body tag.
 ```html
 <script src="https://cdn.jsdelivr.net/npm/generatoc/build/generatoc.min.js"></script>
@@ -55,7 +56,7 @@ Define a `div` element with id attribute
 <div id="toc"></div>
 ```
 
-Use GeneraToc with typescript:
+#### Use GeneraToc with typescript:
 ```typescript
 import generatoc from 'generatoc'
 // Typescript
@@ -71,10 +72,18 @@ const selector: string = '#toc'
 generatoc.init({ content, heading, selector })
 ```
 
-Use GeneraToc with javascript:
+#### Use GeneraToc with javascript:
 ```javascript
 // JavaScript
 import generatoc from 'generatoc'
+const content = '.post-content'
+const heading = ['h2', 'h3', 'h4', 'h5']
+const selector = '#toc'
+generatoc.init({ content, heading, selector })
+```
+
+#### Use in browser environment
+```javascript
 const content = '.post-content'
 const heading = ['h2', 'h3', 'h4', 'h5']
 const selector = '#toc'
@@ -94,10 +103,18 @@ npm run dev
 
 ## Other init options
 ```
-// **scrollHistory**: Accepts a boolean: true or false
-// Adds a hash to the page url, to maintain history, when scrolling to a TOC item
 {
-  scrollHistory: false
+  // scrollHistory: Accepts a boolean: true or false
+  // Adds a hash to the page url, to maintain history, when scrolling to a TOC item
+  scrollHistory: false,
+
+  // scrollOffset: Accepts a number: default to 0
+  // Scroll to the target with a vertical offset(pixel). If you have a fixed header in your page, this is what you need to set.
+  scrollOffset: 0,
+
+  // duration: Accepts a number: default to 7
+  // The duration of scroll animation, a larger number means slower scroll. please input with a number larger than 1.
+  duration: 7,
 }
 ```
 

@@ -10,6 +10,9 @@ interface Params {
   heading?: string[];
   selector?: string;
   scrollHistory?: boolean;
+  scrollOffset?: number;
+  // 60 = 1s
+  duration?: number;
 }
 
 interface Generatoc {
@@ -21,6 +24,8 @@ interface Generatoc {
 let tocContent: string = ''
 let tocHeader: string = ''
 let tocSelector: string = '#toc'
+let tocScrollOffset: number = 0
+let tocDuration: number = 7
 
 let headingList: List[] = []
 let headingNode: NodeListOf<Element>
@@ -168,6 +173,23 @@ function throttle (fn: Function, interval: number = 500) {
   };
 }
 
+function scrollEaseOut (start: number, destination: number = 0, rate: number = 2): void {
+  if (start === destination || rate < 1 ) {
+    return;
+  }
+  let currentPosition = start
+  function jump (): void {
+    currentPosition = currentPosition + (destination - currentPosition) / rate;
+    if (Math.abs(destination - currentPosition) < 1) {
+      window.scrollTo(0, destination);
+      return;
+    }
+    window.scrollTo(0, currentPosition);
+    requestAnimationFrame(jump);
+  };
+  jump();
+}
+
 // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ Utils ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Handle events ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
@@ -194,7 +216,7 @@ function handlePageChange () {
     let anchorText: string | null = null
 
     headingNode.forEach((hNode: Element, index: number) => {
-      const distance = Math.abs(elementOffset(hNode.nextElementSibling ? hNode.nextElementSibling : hNode).top - winScrollTop)
+      const distance = Math.abs(elementOffset(hNode.nextElementSibling ? hNode.nextElementSibling : hNode).top - winScrollTop - tocScrollOffset)
       if (closestAnchorDistance == null || distance < closestAnchorDistance) {
         closestAnchorDistance = distance;
         closestAnchorIdx = index;
@@ -224,7 +246,10 @@ function clickEvent (e: Event) {
   e.stopPropagation()
   const element = <HTMLElement>(e.target)
   const index = element.getAttribute('data-toc-index')
-  headingNode[+index!].scrollIntoView({ behavior: 'smooth' })
+  // headingNode[+index!].scrollIntoView({ behavior: 'smooth' })
+  const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
+  const destination = elementOffset(headingNode[+index!]).top - tocScrollOffset
+  scrollEaseOut(scrollTop, destination, tocDuration)
 }
 
 function setScrollEvent (element: Element) {
@@ -356,11 +381,15 @@ const generatoc: Generatoc = {
     heading = ['h2', 'h3', 'h4', 'h5'],
     selector = '#toc',
     scrollHistory = false,
+    scrollOffset = 0,
+    duration = 7
   }: Params) {
     tocSelector = selector
     tocHeader = heading.join(',')
     tocContent = content
     scrollHistoryConfig = scrollHistory
+    tocScrollOffset = scrollOffset
+    tocDuration = duration
     const postCotent = document.querySelector(tocContent)
     if(!postCotent) {
       return
@@ -395,7 +424,9 @@ const generatoc: Generatoc = {
     generatoc.init({
       content: tocContent,
       heading: tocHeader.split(','),
-      selector: tocSelector
+      selector: tocSelector,
+      scrollOffset: tocScrollOffset,
+      duration: tocDuration,
     })
   }
 }
