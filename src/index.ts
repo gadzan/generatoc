@@ -224,6 +224,7 @@ function handlePageChange () {
           return false;
       }
     })
+    if (!headingNode[closestAnchorIdx]) return;
     anchorText = (<HTMLElement>headingNode[closestAnchorIdx]).innerText
     const tocA = document.querySelector('a[data-toc-index="' + closestAnchorIdx + '"]')
     if (!tocA) {
