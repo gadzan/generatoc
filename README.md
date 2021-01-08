@@ -104,17 +104,21 @@ npm run dev
 ## Other init options
 ```
 {
-  // scrollHistory: Accepts a boolean: true or false
+  // scrollHistory: Accepts a boolean; default to false
   // Adds a hash to the page url, to maintain history, when scrolling to a TOC item
   scrollHistory: false,
 
-  // scrollOffset: Accepts a number: default to 0
+  // scrollOffset: Accepts a number; default to 0
   // Scroll to the target with a vertical offset(pixel). If you have a fixed header in your page, this is what you need to set.
   scrollOffset: 0,
 
-  // duration: Accepts a number: default to 7
+  // duration: Accepts a number; default to 7
   // The duration of scroll animation, a larger number means slower scroll. please input with a number larger than 1.
   duration: 7,
+
+  // fold: Accepts a boolean; default to false
+  // Default show as folded TOC or not
+  fold: false,
 }
 ```
 

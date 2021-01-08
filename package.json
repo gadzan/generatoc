@@ -1,6 +1,6 @@
 {
   "name": "generatoc",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "Automatically generate table of content from heading of HTML document",
   "main": "dist/index.js",
   "scripts": {
@@ -41,6 +41,8 @@
     "@rollup/plugin-buble": "^0.21.3",
     "@rollup/plugin-node-resolve": "^11.0.1",
     "@rollup/plugin-typescript": "^8.1.0",
+    "@testing-library/dom": "^7.29.1",
+    "@testing-library/user-event": "^12.6.0",
     "@types/jest": "^26.0.19",
     "coveralls": "^3.1.0",
     "eslint": "^7.17.0",

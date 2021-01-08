@@ -2,13 +2,13 @@ export default function createElement (putContent: boolean, setToc: boolean, set
   const postContent: HTMLElement = document.createElement('div')
   postContent.setAttribute('class', 'post-content')
 
+  let count = 0;
   if (putContent) {
     const headings = ['h1', 'h2', 'h3', 'h2', 'h3', 'h4', 'h5', 'h6', 'h2', 'h4', 'h6', 'h3', 'h4', 'h2', 'h5', 'h5']
-
     headings.forEach((h) => {
-      const hele: HTMLElement = document.createElement(h)
-      hele.innerHTML = h
-      postContent.appendChild(hele)
+      const hEle: HTMLElement = document.createElement(h)
+      hEle.innerHTML = h
+      postContent.appendChild(hEle)
     })
   }
 
