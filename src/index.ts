@@ -1,4 +1,3 @@
-import { List, Params, Generatoc } from './ultils/type'
 import {
   praseH,
   elementOffset,
@@ -13,6 +12,30 @@ import {
   throttle,
   scrollEaseOut,
 } from './ultils'
+
+interface List {
+  index: number;
+  level: number | null;
+  ele: Element | null;
+  children: List[];
+}
+
+interface Params {
+  content: string;
+  heading?: string[];
+  selector?: string;
+  scrollHistory?: boolean;
+  scrollOffset?: number;
+  // 60 = 1s
+  duration?: number;
+  fold?: boolean;
+}
+
+interface Generatoc {
+  init: ({ content, heading, selector }: Params) => void;
+  destroy: () => void;
+  refresh: () => void;
+}
 
 let tocContent: string = ''
 let tocHeader: string = ''

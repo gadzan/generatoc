@@ -1,4 +1,9 @@
-import { List } from './type'
+interface List {
+  index: number;
+  level: number | null;
+  ele: Element | null;
+  children: List[];
+}
 
 export function last (arr: any[]) {
   return arr[arr.length - 1]

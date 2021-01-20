@@ -1,13 +1,12 @@
 # GeneraToc
 
-![Travis (.org)](https://img.shields.io/travis/gadzan/generatoc?style=for-the-badge)
-![npm 20downloads](https://img.shields.io/npm/dt/generatoc?label=npm%20downloads&logo=npm&style=for-the-badge)
-![npm bundle size](https://img.shields.io/bundlephobia/min/generatoc?style=for-the-badge)
-![Coveralls github](https://img.shields.io/coveralls/github/gadzan/generatoc?style=for-the-badge)
-![License](https://img.shields.io/npm/l/generatoc?style=for-the-badge)
-![Version](https://img.shields.io/npm/v/generatoc?logo=npm&label=version&style=for-the-badge)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/gadzan/generatoc?logo=github&style=for-the-badge)
-[![HitCount](http://hits.dwyl.com/gadzan/generatoc.svg)](http://hits.dwyl.com/gadzan/generatoc)
+[![Travis (.org)](https://img.shields.io/travis/gadzan/generatoc?style=for-the-badge)]()
+[![npm 20downloads](https://img.shields.io/npm/dt/generatoc?label=npm%20downloads&logo=npm&style=for-the-badge)](https://www.npmjs.com/package/generatoc)
+[![npm bundle size](https://img.shields.io/bundlephobia/min/generatoc?style=for-the-badge)](https://www.npmjs.com/package/generatoc)
+[![Coveralls github](https://img.shields.io/coveralls/github/gadzan/generatoc?style=for-the-badge)](https://coveralls.io/github/gadzan/generatoc?branch=master)
+[![License](https://img.shields.io/npm/l/generatoc?style=for-the-badge)](https://github.com/gadzan/generatoc/blob/master/LICENSE)
+[![Version](https://img.shields.io/npm/v/generatoc?logo=npm&label=version&style=for-the-badge)](https://www.npmjs.com/package/generatoc)
+[![GitHub package.json version](https://img.shields.io/github/package-json/v/gadzan/generatoc?logo=github&style=for-the-badge)](github.com/gadzan/generatoc/)
 
 GeneraToc generates a table of contents (TOC) from headings in an HTML document. This is useful for documentation websites or SSR pages because it makes them easier to navigate. 
 

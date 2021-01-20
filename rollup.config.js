@@ -19,9 +19,11 @@ export default [
       path.resolve(__dirname, 'src', 'index.ts'),
     ],
     output: {
-      file: path.resolve(__dirname, 'dist','index.js'),
+      // file: path.resolve(__dirname, 'dist','index.js'),
+      dir: './dist',
       format: 'esm',
     },
+    preserveModules: true,
     plugins: [
       typescript({
         typescript: require('typescript'),
