@@ -1,6 +1,6 @@
 # GeneraToc
 
-[![Travis (.org)](https://img.shields.io/travis/gadzan/generatoc?style=for-the-badge)]()
+[![Travis (.org)](https://img.shields.io/travis/gadzan/generatoc?style=for-the-badge)](https://www.travis-ci.org/gadzan/generatoc)
 [![npm 20downloads](https://img.shields.io/npm/dt/generatoc?label=npm%20downloads&logo=npm&style=for-the-badge)](https://www.npmjs.com/package/generatoc)
 [![npm bundle size](https://img.shields.io/bundlephobia/min/generatoc?style=for-the-badge)](https://www.npmjs.com/package/generatoc)
 [![Coveralls github](https://img.shields.io/coveralls/github/gadzan/generatoc?style=for-the-badge)](https://coveralls.io/github/gadzan/generatoc?branch=master)
