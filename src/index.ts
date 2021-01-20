@@ -226,7 +226,6 @@ function renderToc () {
     window.addEventListener("scroll" , throttle(handlePageChange), false);
   }
 }
-
 // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ Handle elements ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 const generatoc: Generatoc = {
