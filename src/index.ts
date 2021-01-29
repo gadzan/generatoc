@@ -100,24 +100,17 @@ function handlePageChange () {
   })
 }
 
-function clickEvent (e: Event) {
-  e.stopPropagation()
-  const element = <HTMLElement>(e.target)
-  const index = element.getAttribute('data-toc-index')
-  // headingNode[+index!].scrollIntoView({ behavior: 'smooth' })
+function scrollTo (index: String) {
   const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
   const destination = elementOffset(headingNode[+index!]).top - tocScrollOffset
   scrollEaseOut(scrollTop, destination, tocDuration)
 }
 
-function setScrollEvent (element: Element) {
-  element.addEventListener('click', clickEvent)
-}
 
 function traceParentAndShow (ele: HTMLElement) {
   if (ele.id !== tocSelector.substr(1)) {
     Array.prototype.forEach.call(ele.children, (item: HTMLElement) => {
-      if (item.tagName.toLowerCase() === 'ul') {
+      if (item.tagName === 'UL') {
         item.style.transform = 'scaleY(1)'
         item.style.maxHeight = '200px'
       }
@@ -130,24 +123,19 @@ function showRealUlChildren (element: HTMLElement | Element): HTMLCollection | u
   if (!element || !element.children || element.children.length === 0) {
     return undefined
   }
-  if (element.tagName.toLowerCase() === 'ul') {
-    Array.prototype.forEach.call(element.children, (ele: HTMLElement) => {
-      if (ele.tagName.toLowerCase() === 'ul') {
-        ele.style.transform = 'scaleY(1)'
-        ele.style.maxHeight = '200px'
+  if (element.tagName=== 'UL') {
+    Array.prototype.forEach.call(element.children, (child: HTMLElement) => {
+      if (child.tagName === 'UL') {
+        child.style.transform = 'scaleY(1)'
+        child.style.maxHeight = '200px'
       }
     })
     return showRealUlChildren(element.children[0])
   }
 }
 
-function showEvent (e: Event) {
-  e.stopPropagation()
-  triggerShow(<HTMLElement>e.target)
-}
-
-function setShowEvent (element: HTMLElement) {
-  element.addEventListener('click', showEvent)
+function showUlChildren (ele: HTMLElement) {
+  triggerShow(ele)
 }
 
 // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ Handle events ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
@@ -156,7 +144,7 @@ function setShowEvent (element: HTMLElement) {
 
 function triggerShow (element: HTMLElement) {
   if(!element) return
-  const closestUl = element.closest('ul')
+  const closestUl = element.tagName === 'UL' ? element : element.closest('ul')
   if (!closestUl) return
   hideAllTocSubHeading(document.querySelector(tocSelector)!)
   showRealUlChildren(closestUl.children[1])
@@ -167,8 +155,6 @@ function constructElements (item: List) {
   const ul = createUl()
   if (item.ele) {
     const li = createLi(item.ele.textContent, item.index)
-    setScrollEvent(li)
-    setShowEvent(ul)
     ul.append(li)
   }
   if (item.children.length > 0) {
@@ -210,6 +196,15 @@ function processNode (node: Element, preNode: Element | null, heading: List[], i
   }
 }
 
+function handleClick(e: Event) {
+  const ele = <HTMLElement>e.target
+  if (ele.tagName !== 'A') return
+  const index  = ele.getAttribute('data-toc-index') || ''
+  scrollTo(index)
+  const ul = ele.closest('ul');
+  if(ul) showUlChildren(ul)
+}
+
 function renderToc () {
   const tocElement: Element | null = document.querySelector(tocSelector)
   if (tocElement === null) {
@@ -222,6 +217,7 @@ function renderToc () {
   Array.prototype.forEach.call(headingList[0].children, (item: List) => {
     tocElement.appendChild(constructElements(item))
   })
+  tocElement.addEventListener('click', handleClick)
   if(headingNode.length > 0) {
     window.addEventListener("scroll" , throttle(handlePageChange), false);
   }
@@ -263,14 +259,7 @@ const generatoc: Generatoc = {
     if (!tocElement) {
       return
     }
-    tocElement.querySelectorAll('ul')
-      .forEach((ulNode: Element) => {
-        ulNode.removeEventListener('click', showEvent)
-      })
-    tocElement.querySelectorAll('li')
-      .forEach((liNode: Element) => {
-        liNode.removeEventListener('click', clickEvent)
-      })
+    tocElement.removeEventListener('click', handleClick)
     headingList = []
     tocElement.innerHTML = ''
     window.removeEventListener("scroll" , handlePageChange);

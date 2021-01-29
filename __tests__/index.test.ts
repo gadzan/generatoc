@@ -74,13 +74,10 @@ describe('GeneraToc Init function', () => {
     createElement(true, true, true)
     generatoc.init({ content: '.post-content', fold: true })
     checkElements(16, 13, 13)
-    const lis = document.querySelectorAll('li')
-    const uls = document.querySelectorAll('ul')
-    const li = lis[3]
-    const ul = uls[3]
-    userEvent.click(ul)
-    userEvent.click(li)
-    expect(lis.length).toEqual(13);
+    const tocs = document.querySelectorAll('a')
+    const toc = tocs[3]
+    userEvent.click(toc)
+    expect(tocs.length).toEqual(13);
   })
 
   it('GeneraToc Refesh function', () => {
