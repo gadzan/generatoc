@@ -19,17 +19,19 @@ This library was inspired by [Tocify](https://github.com/gfranko/jquery.tocify.j
 ## Installation
 
 Install it with npm.
-```bash
-npm install --save generatoc
-```
 
-OR Install it with yarn.
 ```bash
+# With npm
+npm install --save generatoc
+# or yarn
 yarn add generatoc
+# or pnpm
+pnpm add generatoc
 ```
 
 OR include in browser environment
 include the script at the bottom of the page before the closing body tag.
+
 ```html
 <script src="https://cdn.jsdelivr.net/npm/generatoc/build/generatoc.min.js"></script>
 ```
@@ -37,6 +39,7 @@ include the script at the bottom of the page before the closing body tag.
 Include CSS
 
 in html file
+
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/generatoc/build/generatoc.min.css">
 ```
@@ -44,6 +47,7 @@ in html file
 OR
 
 If you installed it with npm you might try importing the styles from 'node_modules'
+
 ```css
 @import 'generatoc/src/style/main.css';
 ```
@@ -51,11 +55,13 @@ If you installed it with npm you might try importing the styles from 'node_modul
 ## Usage
 
 Define a `div` element with id attribute
+
 ```html
 <div id="toc"></div>
 ```
 
-#### Use GeneraToc with typescript:
+### Use GeneraToc with typescript:
+
 ```typescript
 import generatoc from 'generatoc'
 // Typescript
@@ -71,7 +77,8 @@ const selector: string = '#toc'
 generatoc.init({ content, heading, selector })
 ```
 
-#### Use GeneraToc with javascript:
+### Use GeneraToc with javascript
+
 ```javascript
 // JavaScript
 import generatoc from 'generatoc'
@@ -81,7 +88,8 @@ const selector = '#toc'
 generatoc.init({ content, heading, selector })
 ```
 
-#### Use in browser environment
+### Use in browser environment
+
 ```javascript
 const content = '.post-content'
 const heading = ['h2', 'h3', 'h4', 'h5']
@@ -101,7 +109,8 @@ npm run dev
 ```
 
 ## Other init options
-```
+
+```plain
 {
   // scrollHistory: Accepts a boolean; default to false
   // Adds a hash to the page url, to maintain history, when scrolling to a TOC item
@@ -133,11 +142,13 @@ npm run dev
 ## Using with SSR
 
 If you are using GeneraToc with SSR framwork, like Nuxt.js, please add `transpile` param to `nuxt.config.js`
-```
+
+```javascript
 build: {
   transpile: ['generatoc']
 }
 ```
 
 ## LICENSE
+
 MIT

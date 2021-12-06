@@ -78,7 +78,7 @@ function handlePageChange () {
         closestAnchorDistance = distance;
         closestAnchorIdx = index;
       } else {
-          return false;
+        return false;
       }
     })
     if (!headingNode[closestAnchorIdx]) return;
@@ -93,7 +93,7 @@ function handlePageChange () {
     } else {
       return
     }
-    elem.querySelector('li')!.classList.add('active')
+    activateElement(elem)
     if(scrollHistoryConfig && window.location.hash !== "#" + anchorText) {
       window.location.replace("#" + anchorText);
     }
@@ -142,6 +142,12 @@ function showUlChildren (ele: HTMLElement) {
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Handle elements ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
+function activateElement(element: HTMLElement) {
+  if(!Array.prototype.includes.call(element.classList, 'active')) {
+    element.querySelector('li')!.classList.add('active')
+  };
+}
+
 function triggerShow (element: HTMLElement) {
   if(!element) return
   const closestUl = element.tagName === 'UL' ? element : element.closest('ul')
@@ -149,6 +155,7 @@ function triggerShow (element: HTMLElement) {
   hideAllTocSubHeading(document.querySelector(tocSelector)!)
   showRealUlChildren(closestUl.children[1])
   traceParentAndShow(element)
+  activateElement(element);
 }
 
 function constructElements (item: List) {
