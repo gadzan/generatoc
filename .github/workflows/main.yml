@@ -41,6 +41,6 @@ jobs:
       #   run: yarn test
 
       - name: Publish to NPM
-        run: yarn release || true
+        run: npm run release || true
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
