@@ -11,7 +11,7 @@ import {
   hideAllTocSubHeading,
   throttle,
   scrollEaseOut,
-} from './ultils'
+} from "./ultils";
 
 interface List {
   index: number;
@@ -24,7 +24,7 @@ interface Params {
   content: string;
   heading?: string[];
   selector?: string;
-  scrollHistory?: boolean;
+  scrollHistory?: ScrollHistoryConfig | boolean | null;
   scrollOffset?: number;
   // 60 = 1s
   duration?: number;
@@ -37,105 +37,145 @@ interface Generatoc {
   refresh: () => void;
 }
 
-let tocContent: string = ''
-let tocHeader: string = ''
-let tocSelector: string = '#toc'
-let tocScrollOffset: number = 0
-let tocDuration: number = 7
-let tocFolded: boolean = false
+interface ScrollHistoryConfig {
+  replacePattern?: RegExp | string;
+  replacement?: string;
+  readableSpace?: boolean;
+  scrollToAfterMounted?: boolean;
+}
 
-let headingList: List[] = []
-let headingNode: NodeListOf<Element>
-let extendPageOffset: number = 100
-let scrollHistoryConfig: boolean = false
+let tocContent: string = "";
+let tocHeader: string = "";
+let tocSelector: string = "#toc";
+let tocScrollOffset: number = 0;
+let tocDuration: number = 7;
+let tocFolded: boolean = false;
+
+let headingList: List[] = [];
+let headingNode: NodeListOf<Element>;
+let extendPageOffset: number = 100;
+let scrollHistoryConfig: ScrollHistoryConfig | boolean | null = null;
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Handle events ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
-function handlePageChange () {
-  const winScrollTop: number = getScrollTop()
-  const docHeight: number = document.body.offsetHeight
-  const winHeight: number = window.innerHeight
-  const scrollHeight: number = document.body.scrollHeight
-  let elem: HTMLElement | null
+function handlePageChange() {
+  const winScrollTop: number = getScrollTop();
+  const docHeight: number = document.body.offsetHeight;
+  const winHeight: number = window.innerHeight;
+  const scrollHeight: number = document.body.scrollHeight;
+  let elem: HTMLElement | null;
   // let lastElem, lastElemOffset, currentElem
 
   // If scrolled to the bottom of the page
-  if ((winScrollTop >= scrollHeight - winHeight - extendPageOffset) || (winHeight + winScrollTop > docHeight - extendPageOffset)) {
+  if (
+    winScrollTop >= scrollHeight - winHeight - extendPageOffset ||
+    winHeight + winScrollTop > docHeight - extendPageOffset
+  ) {
     // TODO
   }
 
-  window.requestAnimationFrame(function() {
-    let closestAnchorDistance: number | null = null
+  window.requestAnimationFrame(function () {
+    let closestAnchorDistance: number | null = null;
 
     // Stores the index of the closest anchor
-    let closestAnchorIdx: number = 0
+    let closestAnchorIdx: number = 0;
 
-    let anchorText: string | null = null
+    let anchorText: string | null = null;
 
     headingNode.forEach((hNode: Element, index: number) => {
-      const distance = Math.abs(elementOffset(hNode.nextElementSibling ? hNode.nextElementSibling : hNode).top - winScrollTop - tocScrollOffset)
+      const distance = Math.abs(
+        elementOffset(
+          hNode.nextElementSibling ? hNode.nextElementSibling : hNode
+        ).top -
+          winScrollTop -
+          tocScrollOffset
+      );
       if (closestAnchorDistance == null || distance < closestAnchorDistance) {
         closestAnchorDistance = distance;
         closestAnchorIdx = index;
       } else {
         return false;
       }
-    })
+    });
     if (!headingNode[closestAnchorIdx]) return;
-    anchorText = (<HTMLElement>headingNode[closestAnchorIdx]).innerText
-    const tocA = document.querySelector('a[data-toc-index="' + closestAnchorIdx + '"]')
+    anchorText = (<HTMLElement>headingNode[closestAnchorIdx]).innerText;
+    const tocA = document.querySelector(
+      'a[data-toc-index="' + closestAnchorIdx + '"]'
+    );
     if (!tocA) {
-      return
+      return;
     }
-    elem = <HTMLElement>tocA.closest('ul')
+    elem = <HTMLElement>tocA.closest("ul");
     if (elem) {
-      triggerShow(elem)
+      triggerShow(elem);
     } else {
-      return
+      return;
     }
-    activateElement(elem)
-    if(scrollHistoryConfig && window.location.hash !== "#" + anchorText) {
+    activateElement(elem);
+    if (scrollHistoryConfig) {
+      if (typeof scrollHistoryConfig !== "boolean") {
+        const { replacePattern, replacement, readableSpace } =
+          scrollHistoryConfig;
+        if (readableSpace) {
+          anchorText = anchorText.replace(/\s/g, "-");
+        } else if (
+          replacePattern instanceof RegExp &&
+          typeof replacement !== "undefined"
+        ) {
+          anchorText = anchorText.replace(replacePattern, replacement);
+        }
+      }
       window.location.replace("#" + anchorText);
     }
-  })
+  });
 }
 
-function scrollTo (index: String) {
-  const scrollTop = document.documentElement.scrollTop || document.body.scrollTop
-  const destination = elementOffset(headingNode[+index!]).top - tocScrollOffset
-  scrollEaseOut(scrollTop, destination, tocDuration)
+function scrollTo(index: string) {
+  const scrollTop =
+    document.documentElement.scrollTop || document.body.scrollTop;
+  const destination = elementOffset(headingNode[+index!]).top - tocScrollOffset;
+  scrollEaseOut(scrollTop, destination, tocDuration);
 }
 
+function scrollByHistory(title: string) {
+  const decodedTitle = decodeURIComponent(title);
+  const index = Array.prototype.findIndex.call(headingNode, i => i.innerText === decodedTitle);
+  if (index !== -1) {
+    scrollTo(index.toString());
+  }
+}
 
-function traceParentAndShow (ele: HTMLElement) {
+function traceParentAndShow(ele: HTMLElement) {
   if (ele.id !== tocSelector.substr(1)) {
     Array.prototype.forEach.call(ele.children, (item: HTMLElement) => {
-      if (item.tagName === 'UL') {
-        item.style.transform = 'scaleY(1)'
-        item.style.maxHeight = '200px'
+      if (item.tagName === "UL") {
+        item.style.transform = "scaleY(1)";
+        item.style.maxHeight = "200px";
       }
-    })
-    traceParentAndShow(ele.parentElement!)
+    });
+    traceParentAndShow(ele.parentElement!);
   }
 }
 
-function showRealUlChildren (element: HTMLElement | Element): HTMLCollection | undefined {
+function showRealUlChildren(
+  element: HTMLElement | Element
+): HTMLCollection | undefined {
   if (!element || !element.children || element.children.length === 0) {
-    return undefined
+    return undefined;
   }
-  if (element.tagName=== 'UL') {
+  if (element.tagName === "UL") {
     Array.prototype.forEach.call(element.children, (child: HTMLElement) => {
-      if (child.tagName === 'UL') {
-        child.style.transform = 'scaleY(1)'
-        child.style.maxHeight = '200px'
+      if (child.tagName === "UL") {
+        child.style.transform = "scaleY(1)";
+        child.style.maxHeight = "200px";
       }
-    })
-    return showRealUlChildren(element.children[0])
+    });
+    return showRealUlChildren(element.children[0]);
   }
 }
 
-function showUlChildren (ele: HTMLElement) {
-  triggerShow(ele)
+function showUlChildren(ele: HTMLElement) {
+  triggerShow(ele);
 }
 
 // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ Handle events ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
@@ -143,145 +183,151 @@ function showUlChildren (ele: HTMLElement) {
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ Handle elements ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 
 function activateElement(element: HTMLElement) {
-  if(!Array.prototype.includes.call(element.classList, 'active')) {
-    element.querySelector('li')!.classList.add('active')
-  };
+  if (!Array.prototype.includes.call(element.classList, "active")) {
+    element.querySelector("li")!.classList.add("active");
+  }
 }
 
-function triggerShow (element: HTMLElement) {
-  if(!element) return
-  const closestUl = element.tagName === 'UL' ? element : element.closest('ul')
-  if (!closestUl) return
-  hideAllTocSubHeading(document.querySelector(tocSelector)!)
-  showRealUlChildren(closestUl.children[1])
-  traceParentAndShow(element)
+function triggerShow(element: HTMLElement) {
+  if (!element) return;
+  const closestUl = element.tagName === "UL" ? element : element.closest("ul");
+  if (!closestUl) return;
+  hideAllTocSubHeading(document.querySelector(tocSelector)!);
+  showRealUlChildren(closestUl.children[1]);
+  traceParentAndShow(element);
   activateElement(element);
 }
 
-function constructElements (item: List) {
-  const ul = createUl()
+function constructElements(item: List) {
+  const ul = createUl();
   if (item.ele) {
-    const li = createLi(item.ele.textContent, item.index)
-    ul.append(li)
+    const li = createLi(item.ele.textContent, item.index);
+    ul.append(li);
   }
   if (item.children.length > 0) {
     item.children.forEach((subHead: List) => {
-      ul.append(constructElements(subHead))
-    })
+      ul.append(constructElements(subHead));
+    });
   }
-  return ul
+  return ul;
 }
 
-function processNode (node: Element, preNode: Element | null, heading: List[], index: number) {
-  const curHeadLevel: number = praseH(node.localName)
-  const preHeadLevel: number = preNode ? praseH(preNode.localName) : 0
+function processNode(
+  node: Element,
+  preNode: Element | null,
+  heading: List[],
+  index: number
+) {
+  const curHeadLevel: number = praseH(node.localName);
+  const preHeadLevel: number = preNode ? praseH(preNode.localName) : 0;
 
   const item: List = {
     index,
     level: curHeadLevel,
     ele: null,
-    children: []
-  }
+    children: [],
+  };
   // If heading level same as previous, append it to previous parent node.
   // 如果层级相同, 找到前一 tag 的父节点 append 这节点
   if (curHeadLevel === preHeadLevel) {
-    item.ele = node
-    item.level = curHeadLevel
-    lastBranches(heading).push(item)
+    item.ele = node;
+    item.level = curHeadLevel;
+    lastBranches(heading).push(item);
   } else if (curHeadLevel > preHeadLevel) {
     // If current heading level is lower than previous heading level,
     // find the parent of the last leaf of heading node and append it.
-    const distance: number = curHeadLevel - preHeadLevel
-    lastLeaf(heading).push(
-      nestNode(distance - 1, node, curHeadLevel, index)
-    )
+    const distance: number = curHeadLevel - preHeadLevel;
+    lastLeaf(heading).push(nestNode(distance - 1, node, curHeadLevel, index));
   } else {
-    item.ele = node
+    item.ele = node;
     // Find parent node of the last same level and append it
     // 找到最后一个同一层级的父节点 append 上当前节点
-    getLastHeadingParentOf(curHeadLevel, heading, index).children.push(item)
+    getLastHeadingParentOf(curHeadLevel, heading, index).children.push(item);
   }
 }
 
 function handleClick(e: Event) {
-  const ele = <HTMLElement>e.target
-  if (ele.tagName !== 'A') return
-  const index  = ele.getAttribute('data-toc-index') || ''
-  scrollTo(index)
-  const ul = ele.closest('ul');
-  if(ul) showUlChildren(ul)
+  const ele = <HTMLElement>e.target;
+  if (ele.tagName !== "A") return;
+  const index = ele.getAttribute("data-toc-index") || "";
+  scrollTo(index);
+  const ul = ele.closest("ul");
+  if (ul) showUlChildren(ul);
 }
 
-function renderToc () {
-  const tocElement: Element | null = document.querySelector(tocSelector)
+function renderToc() {
+  const tocElement: Element | null = document.querySelector(tocSelector);
   if (tocElement === null) {
-    return
+    return;
   }
   if (!headingList[0]) {
-    return
+    return;
   }
-  headingList[0].index = -1
+  headingList[0].index = -1;
   Array.prototype.forEach.call(headingList[0].children, (item: List) => {
-    tocElement.appendChild(constructElements(item))
-  })
-  tocElement.addEventListener('click', handleClick)
-  if(headingNode.length > 0) {
-    window.addEventListener("scroll" , throttle(handlePageChange), false);
+    tocElement.appendChild(constructElements(item));
+  });
+  tocElement.addEventListener("click", handleClick);
+  if (headingNode.length > 0) {
+    window.addEventListener("scroll", throttle(handlePageChange), false);
   }
 }
 // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ Handle elements ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 const generatoc: Generatoc = {
-  init ({
+  init({
     content,
-    heading = ['h2', 'h3', 'h4', 'h5'],
-    selector = '#toc',
-    scrollHistory = false,
+    heading = ["h2", "h3", "h4", "h5"],
+    selector = "#toc",
+    scrollHistory = null,
     scrollOffset = 0,
     duration = 7,
-    fold = false
+    fold = false,
   }: Params) {
-    tocSelector = selector
-    tocHeader = heading.join(',')
-    tocContent = content
-    scrollHistoryConfig = scrollHistory
-    tocScrollOffset = scrollOffset
-    tocDuration = duration
-    tocFolded = fold
-    const postCotent = document.querySelector(tocContent)
-    if(!postCotent) {
-      return
+    tocSelector = selector;
+    tocHeader = heading.join(",");
+    tocContent = content;
+    scrollHistoryConfig = scrollHistory;
+    tocScrollOffset = scrollOffset;
+    tocDuration = duration;
+    tocFolded = fold;
+    const postCotent = document.querySelector(tocContent);
+    if (!postCotent) {
+      return;
     }
-    headingNode = postCotent.querySelectorAll(tocHeader)
-    let previousNode: Element | null
+    headingNode = postCotent.querySelectorAll(tocHeader);
+    let previousNode: Element | null;
     headingNode.forEach((hNode: Element, index: number) => {
-      previousNode = index === 0 ? null : headingNode[index - 1]
-      processNode(hNode, previousNode, headingList, index)
-    })
-    renderToc()
-    if(fold) handlePageChange()
-  },
-  destroy () {
-    const tocElement = document.querySelector(tocSelector)
-    if (!tocElement) {
-      return
+      previousNode = index === 0 ? null : headingNode[index - 1];
+      processNode(hNode, previousNode, headingList, index);
+    });
+    renderToc();
+    if (fold) handlePageChange();
+    if (typeof scrollHistoryConfig !== 'boolean' && scrollHistoryConfig?.scrollToAfterMounted) {
+      scrollByHistory(window.location.hash.replace('#', ''));
     }
-    tocElement.removeEventListener('click', handleClick)
-    headingList = []
-    tocElement.innerHTML = ''
-    window.removeEventListener("scroll" , handlePageChange);
   },
-  refresh () {
-    generatoc.destroy()
+  destroy() {
+    const tocElement = document.querySelector(tocSelector);
+    if (!tocElement) {
+      return;
+    }
+    tocElement.removeEventListener("click", handleClick);
+    headingList = [];
+    tocElement.innerHTML = "";
+    window.removeEventListener("scroll", handlePageChange);
+  },
+  refresh() {
+    generatoc.destroy();
     generatoc.init({
       content: tocContent,
-      heading: tocHeader.split(','),
+      heading: tocHeader.split(","),
       selector: tocSelector,
       scrollOffset: tocScrollOffset,
       duration: tocDuration,
       fold: tocFolded,
-    })
-  }
-}
+    });
+  },
+};
 
-export default generatoc
+export default generatoc;

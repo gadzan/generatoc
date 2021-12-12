@@ -60,7 +60,7 @@ Define a `div` element with id attribute
 <div id="toc"></div>
 ```
 
-### Use GeneraToc with typescript:
+### Use GeneraToc with typescript
 
 ```typescript
 import generatoc from 'generatoc'
@@ -110,9 +110,15 @@ npm run dev
 
 ## Other init options
 
-```plain
+```javascript
 {
-  // scrollHistory: Accepts a boolean; default to false
+  // scrollHistory: default to null;
+  // scrollHistory: {
+  //   readableSpace?: boolean;              // Replace url hash string form '%20' to '-';
+  //   replacePattern?: RegExp | string;     // You can also define your own pattern to replace the url hash string;
+  //   replacement?: string;                 // Replacement of the pattern;
+  //   scrollToAfterMounted?: boolean;       // Option to scroll to the title after page mounted; * Only valid when above options are unset;
+  // }
   // Adds a hash to the page url, to maintain history, when scrolling to a TOC item
   scrollHistory: false,
 

@@ -1,6 +1,6 @@
 {
   "name": "generatoc",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Automatically generate table of content from heading of HTML document",
   "main": "dist/index.js",
   "module": "dist/index.js",
