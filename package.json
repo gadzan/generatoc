@@ -4,6 +4,7 @@
   "description": "Automatically generate table of content from heading of HTML document",
   "main": "dist/index.js",
   "module": "dist/index.js",
+  "type": "module",
   "scripts": {
     "test": "jest --coverage && coveralls < coverage/lcov.info",
     "jest": "jest --coverage",
